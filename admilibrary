@@ -1,0 +1,91 @@
+local admilib = {}
+
+local mainFrame = Instance.new("ScreenGui")
+mainFrame.Name = "admilibGui"
+mainFrame.IgnoreGuiInset = true
+mainFrame.Enabled = false
+mainFrame.ResetOnSpawn = false
+
+local mainContainer = Instance.new("Frame")
+mainContainer.Size = UDim2.new(0, 300, 0, 200)
+mainContainer.Position = UDim2.new(0.5, -150, 0.5, -100)
+mainContainer.AnchorPoint = Vector2.new(0.5, 0.5)
+mainContainer.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+mainContainer.BorderSizePixel = 0
+mainContainer.Parent = mainFrame
+
+function admilib:Show()
+    mainFrame.Enabled = true
+end
+
+function admilib:Hide()
+    mainFrame.Enabled = false
+end
+
+function admilib:CreateTab(text)
+    local tabFrame = Instance.new("Frame")
+    tabFrame.Size = UDim2.new(1, 0, 0, 30)
+    tabFrame.BackgroundTransparency = 1
+    tabFrame.Parent = mainContainer
+
+    local tabButton = Instance.new("TextButton")
+    tabButton.Size = UDim2.new(1, 0, 1, 0)
+    tabButton.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+    tabButton.BorderSizePixel = 0
+    tabButton.Text = text
+    tabButton.TextColor3 = Color3.new(1, 1, 1)
+    tabButton.Parent = tabFrame
+
+    local tabContainer = Instance.new("Frame")
+    tabContainer.Size = UDim2.new(1, 0, 1, -30)
+    tabContainer.Position = UDim2.new(0, 0, 0, 30)
+    tabContainer.BackgroundTransparency = 1
+    tabContainer.Visible = false
+    tabContainer.Parent = mainContainer
+
+    tabButton.MouseButton1Click:Connect(function()
+        for _, container in ipairs(mainContainer:GetChildren()) do
+            if container:IsA("Frame") and container ~= tabFrame then
+                container.Visible = false
+            end
+        end
+        tabContainer.Visible = true
+    end)
+
+    local tabFunctions = {}
+    function tabFunctions:CreateButton(buttonText, callback)
+        local button = Instance.new("TextButton")
+        button.Size = UDim2.new(1, 0, 0, 30)
+        button.BackgroundColor3 = Color3.fromRGB(100, 100, 255)
+        button.BorderSizePixel = 0
+        button.Text = buttonText
+        button.TextColor3 = Color3.new(1, 1, 1)
+        button.Parent = tabContainer
+
+        button.MouseButton1Click:Connect(function()
+            callback()
+        end)
+    end
+
+    function tabFunctions:CreateToggle(toggleText, callback)
+        local toggled = false
+
+        local toggleButton = Instance.new("TextButton")
+        toggleButton.Size = UDim2.new(1, 0, 0, 30)
+        toggleButton.BackgroundColor3 = Color3.fromRGB(255, 100, 100)
+        toggleButton.BorderSizePixel = 0
+        toggleButton.Text = toggleText
+        toggleButton.TextColor3 = Color3.new(1, 1, 1)
+        toggleButton.Parent = tabContainer
+
+        toggleButton.MouseButton1Click:Connect(function()
+            toggled = not toggled
+            toggleButton.BackgroundColor3 = toggled and Color3.fromRGB(100, 255, 100) or Color3.fromRGB(255, 100, 100)
+            callback(toggled)
+        end)
+    end
+
+    return tabFunctions
+end
+
+return admilib
